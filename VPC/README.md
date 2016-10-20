@@ -12,6 +12,13 @@ pip install awacs
 Update the data.py with your subnet information, not that each AWS Account has different AZ name, make sure to set yours.
 Also make sure the CIDR are unic to your account
 
+just run: 
+```bash
+python vpc.py > myVPCCloudFormation.json
+```
+
+and use the console or CLI to create your stack
+
 ### Reference
 
 [Troposphere](https://github.com/cloudtools/troposphere)
