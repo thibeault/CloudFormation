@@ -2,7 +2,8 @@
 
 CIDRLookup = {
     'all': '0.0.0.0/0',
-    'cidr': '10.15.0.0/19'
+    'cidr': '10.15.0.0/19',
+    'NatHA': 'No'
 }
 
 # Defining our public subnets,

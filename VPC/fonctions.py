@@ -75,30 +75,54 @@ def addSubnet(template, CidrBlock, Name, AvailabilityZone, MapPublicIpOnLaunch, 
         })
     ))
 
-#NatGatewayArray = [addNatGateway(t, subnet) for subnet in PublicSubnets]
-def addNatGateway(template, subnet, CidrBlock, priv_subnet):
+###
+#def addNatGateway2(template, subnet, CidrBlock, priv_subnet):
+#    ### Create EIP
+#    NATGatewayEIP = template.add_resource(EIP("NatEIP"+subnet.AvailabilityZone.replace("-", ""),Domain='VPC'))
+#    PrivateNATGateway = template.add_resource(NatGateway(
+#        "NATGateway"+subnet.AvailabilityZone.replace("-", ""),
+#        AllocationId=GetAtt(NATGatewayEIP, 'AllocationId'),
+#        SubnetId=Ref(subnet)
+#    ))
+#    ### Create Private Route Table for all Public Subnets
+#    PrivateRouteTable = template.add_resource(RouteTable(
+#        "PrivateRouteTable"+subnet.AvailabilityZone.replace("-", ""),
+#        VpcId=Ref("VPC"),
+#        Tags=Tags(
+#            Name=Join("",[Ref("AWS::StackName"),"-private"])
+#        )
+#    ))
+#    ### Add a route to the internet from the Public Route Table
+#    PrivateRouteToNATGateway = template.add_resource(Route(
+#        "PrivateRouteToNatGateway"+subnet.AvailabilityZone.replace("-", ""),
+#        DestinationCidrBlock=CidrBlock,
+#        NatGatewayId=Ref(PrivateNATGateway),
+#        RouteTableId=Ref(PrivateRouteTable),
+#    ))
+#    addSubnetRouteTableAssociation(template, priv_subnet, PrivateRouteTable)
+#    return PrivateNATGateway
+
+### Create a NAT Gateway and attach it to the subnet. Make sure you provide a public Subnet
+def addNatGateway(template, subnet):
     ### Create EIP
     NATGatewayEIP = template.add_resource(EIP("NatEIP"+subnet.AvailabilityZone.replace("-", ""),Domain='VPC'))
-    PrivateNATGateway = template.add_resource(NatGateway(
+
+    ### Create the NATGateway
+    NATGateway = template.add_resource(NatGateway(
         "NATGateway"+subnet.AvailabilityZone.replace("-", ""),
         AllocationId=GetAtt(NATGatewayEIP, 'AllocationId'),
         SubnetId=Ref(subnet)
     ))
-    ### Create Public Route Table for all Public Subnets
-    PrivateRouteTable = template.add_resource(RouteTable(
-        "PrivateRouteTable"+subnet.AvailabilityZone.replace("-", ""),
+    return NATGateway
+
+
+def addRouteTable(template, az, priv_pubStr):
+    ### Create  Route Table
+    myRouteTable = template.add_resource(RouteTable(
+        priv_pubStr+"RouteTable"+az.replace("-", ""),
         VpcId=Ref("VPC"),
         Tags=Tags(
-            Name=Join("",[Ref("AWS::StackName"),"-private"])
+            Name=Join("",[Ref("AWS::StackName"),"-"+priv_pubStr])
         )
     ))
-    ### Add a route to the internet from the Public Route Table
-    PrivateRouteToNATGateway = template.add_resource(Route(
-        "PrivateRouteToNatGateway"+subnet.AvailabilityZone.replace("-", ""),
-        DestinationCidrBlock=CidrBlock,
-        NatGatewayId=Ref(PrivateNATGateway),
-        RouteTableId=Ref(PrivateRouteTable),
-    ))
-    addSubnetRouteTableAssociation(template, priv_subnet, PrivateRouteTable)
-    return PrivateNATGateway
-
+    return myRouteTable

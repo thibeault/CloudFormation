@@ -13,7 +13,7 @@ from troposphere import ec2
 from troposphere import Ref, Template, Tags, Join
 
 from data import  CIDRLookup, PrivateSubnetsData, PublicSubnetsData, AllSubnetsData
-from fonctions import addNatGateway, addSubnetRouteTableAssociation, addRouteToRouteTable, addNaclEntry, addSubnetNaclAssociation, addSubnet
+from fonctions import addRouteTable, addNatGateway, addSubnetRouteTableAssociation, addRouteToRouteTable, addNaclEntry, addSubnetNaclAssociation, addSubnet
 
 t = Template()
 
@@ -29,7 +29,6 @@ vpcName_param = t.add_parameter(Parameter(
     Default="TestVPC",
     Type="String"
 ))
-
 
 
 ### Create the VPC, with Name from Parameter and CIDR from data.py
@@ -65,6 +64,7 @@ PrivateSubnets = [addSubnet(t, **SubnetData) for SubnetData in PrivateSubnetsDat
 PublicSubnets = [addSubnet(t, **SubnetData) for SubnetData in PublicSubnetsData]
 
 ### Create Public Route Table for all Public Subnets
+### We are using the same route table for all public subnets
 PublicRouteTable = t.add_resource(RouteTable(
     "PublicRouteTable",
     VpcId=Ref("VPC"),
@@ -84,16 +84,43 @@ PublicRouteToInternetGateway = t.add_resource(Route(
 ### Add all public subnets to the RouteTable
 PublicRouteTableSubnetAssociations = [addSubnetRouteTableAssociation(t, subnet, PublicRouteTable) for subnet in PublicSubnets]
 
-NatGatewayArray = [addNatGateway(t, pub_subnet, CIDRLookup['all'], [priv_subnet for priv_subnet in PrivateSubnets if priv_subnet.AvailabilityZone == pub_subnet.AvailabilityZone][0]) for pub_subnet in PublicSubnets]
+#NatGatewayArray = [addNatGateway(t, pub_subnet, CIDRLookup['all'], [priv_subnet for priv_subnet in PrivateSubnets if priv_subnet.AvailabilityZone == pub_subnet.AvailabilityZone][0]) for pub_subnet in PublicSubnets]
+
+
+if "Yes" in CIDRLookup['NatHA']:
+    ### to be fully HA, we need to create a NAT per AZ.
+    NatGatewayArray = {}
+    for pub_subnet in PublicSubnets:
+        NatGatewayArray[pub_subnet.AvailabilityZone] = addNatGateway(t, pub_subnet)
+
+
+    PrivateRouteTableArray = {}
+    for priv_subnet in PrivateSubnets:
+        PrivateRouteTableArray[priv_subnet.AvailabilityZone] = addRouteTable(t, priv_subnet.AvailabilityZone,"Private")
+        ### Create Route and add NATGateway and RouteTable
+        t.add_resource(Route(
+            "PrivateRouteToNatGateway"+priv_subnet.AvailabilityZone.replace("-", ""),
+            DestinationCidrBlock=CIDRLookup['all'],
+            NatGatewayId=Ref(NatGatewayArray[priv_subnet.AvailabilityZone]),
+            RouteTableId=Ref(PrivateRouteTableArray[priv_subnet.AvailabilityZone]),
+            ))
+        ### Add Subnet to the Private RoteTable
+        addSubnetRouteTableAssociation(t, priv_subnet, PrivateRouteTableArray[priv_subnet.AvailabilityZone])
+else :
+    ### Create the NAT Gateway
+    NatGateway = addNatGateway(t, PublicSubnets[0])
+    PrivateRouteTable = addRouteTable(t, "allAZ", "Private")
+    ### Create Route and add NATGateway and RouteTable
+    t.add_resource(Route(
+        "PrivateRouteToNatGateway"+"allPrivateAZ",
+        DestinationCidrBlock=CIDRLookup['all'],
+        NatGatewayId=Ref(NatGateway),
+        RouteTableId=Ref(PrivateRouteTable),
+        ))
+    ### Add Subnet to the Private RoteTable
+    for priv_subnet in PrivateSubnets:
+        addSubnetRouteTableAssociation(t, priv_subnet, PrivateRouteTable)
 
 
 
-# us-east-1a
-# us-east-1c
-# us-east-1d
-# us-east-1e
-
-
-
-#print(NatGatewayArray)
 print(t.to_json())
