@@ -1,6 +1,11 @@
 
-
-CIDRLookup = {
+# all is use to setup the route tables for outbound access
+# cidr is use to great the VPC and to setup the Route, enabeling everybody within the VPC to talk to each other
+# NatHA No = we will only create one NAT Gateway that will be host in 1 AZ, if that 1 AZ go dark, none of your private
+#            subnet will be able to access the outbound internet, but they will still be able to received calls
+#       Yes = We will create one NAT Gateway for each AZ, this options is ensure all your private Subnet are able to
+#             access the outbound internet. Your cost for NAT Gateway will be X by the number of AZ you have.
+CIDRInfo = {
     'all': '0.0.0.0/0',
     'cidr': '10.15.0.0/19',
     'NatHA': 'No'
@@ -69,5 +74,4 @@ PrivateSubnetsData = [
 ]
 
 
-AllSubnetsData = PrivateSubnetsData + PublicSubnetsData
 

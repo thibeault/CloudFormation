@@ -20,6 +20,7 @@ from troposphere.ec2 import SubnetNetworkAclAssociation
 from troposphere import Ref, Template, Tags, Join
 
 
+### Add subnet to the routeTable
 def addSubnetRouteTableAssociation(template, subnet, routeTable):
     return template.add_resource(
         SubnetRouteTableAssociation(
@@ -29,8 +30,9 @@ def addSubnetRouteTableAssociation(template, subnet, routeTable):
             )
     )
 
-def addRouteToRouteTable(template, routeTable, Gateway, DestinationCidrBloc):
-    name = "PrivateRoute"
+### Create Route and add Internet Gateway to the routeTable
+def addRouteToRouteTableIGW(template, routeTable, Gateway, DestinationCidrBlock, name):
+    #name = "PrivateRoute"
     return template.add_resource(Route(
         name,
         GatewayId=Ref(Gateway),
@@ -38,30 +40,19 @@ def addRouteToRouteTable(template, routeTable, Gateway, DestinationCidrBloc):
         RouteTableId=Ref(routeTable),
     ))
 
-def addNaclEntry(template, nacl, RuleNumber, Protocol, PortRange, Egress, CidrBlock, RuleAction):
-    name = RuleNumber
-    return template.add_resource(NetworkAclEntry(
+### Create Route and add Internet Gateway to the routeTable
+def addRouteToRouteTableNAT(template, routeTable, Gateway, DestinationCidrBlock, name):
+    #name = "PrivateRouteToNatGateway"
+    return template.add_resource(Route(
         name,
-        NetworkAclId=Ref(nacl),
-        RuleNumber=RuleNumber,
-        Protocol=Protocol,
-        PortRange=PortRange,
-        Egress=Egress,
-        RuleAction=RuleAction,
-        CidrBlock=CidrBlock,
+        DestinationCidrBlock=DestinationCidrBlock,
+        NatGatewayId=Ref(Gateway),
+        RouteTableId=Ref(routeTable)
     ))
 
-def addSubnetNaclAssociation(template, subnet, nacl):
-    name = subnet.title+nacl.title
-    return template.add_resource(
-        SubnetNetworkAclAssociation(
-            name,
-            SubnetId=Ref(subnet),
-            NetworkAclId=Ref(nacl),
-        )
-    )
 
 
+### adding the subnet
 def addSubnet(template, CidrBlock, Name, AvailabilityZone, MapPublicIpOnLaunch, Network):
     return template.add_resource(Subnet(
         "Subnet"+Name.replace("-", "").replace(" ", "").replace("/","").replace(".", "")+Network+AvailabilityZone.replace("-","")+CidrBlock.replace("/","").replace(".", ""),
@@ -75,32 +66,6 @@ def addSubnet(template, CidrBlock, Name, AvailabilityZone, MapPublicIpOnLaunch, 
         })
     ))
 
-###
-#def addNatGateway2(template, subnet, CidrBlock, priv_subnet):
-#    ### Create EIP
-#    NATGatewayEIP = template.add_resource(EIP("NatEIP"+subnet.AvailabilityZone.replace("-", ""),Domain='VPC'))
-#    PrivateNATGateway = template.add_resource(NatGateway(
-#        "NATGateway"+subnet.AvailabilityZone.replace("-", ""),
-#        AllocationId=GetAtt(NATGatewayEIP, 'AllocationId'),
-#        SubnetId=Ref(subnet)
-#    ))
-#    ### Create Private Route Table for all Public Subnets
-#    PrivateRouteTable = template.add_resource(RouteTable(
-#        "PrivateRouteTable"+subnet.AvailabilityZone.replace("-", ""),
-#        VpcId=Ref("VPC"),
-#        Tags=Tags(
-#            Name=Join("",[Ref("AWS::StackName"),"-private"])
-#        )
-#    ))
-#    ### Add a route to the internet from the Public Route Table
-#    PrivateRouteToNATGateway = template.add_resource(Route(
-#        "PrivateRouteToNatGateway"+subnet.AvailabilityZone.replace("-", ""),
-#        DestinationCidrBlock=CidrBlock,
-#        NatGatewayId=Ref(PrivateNATGateway),
-#        RouteTableId=Ref(PrivateRouteTable),
-#    ))
-#    addSubnetRouteTableAssociation(template, priv_subnet, PrivateRouteTable)
-#    return PrivateNATGateway
 
 ### Create a NAT Gateway and attach it to the subnet. Make sure you provide a public Subnet
 def addNatGateway(template, subnet):
@@ -115,7 +80,7 @@ def addNatGateway(template, subnet):
     ))
     return NATGateway
 
-
+### Adding route table
 def addRouteTable(template, az, priv_pubStr):
     ### Create  Route Table
     myRouteTable = template.add_resource(RouteTable(
