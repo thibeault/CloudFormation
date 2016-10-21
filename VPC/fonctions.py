@@ -55,7 +55,8 @@ def addRouteToRouteTableNAT(template, routeTable, Gateway, DestinationCidrBlock,
 ### adding the subnet
 def addSubnet(template, CidrBlock, Name, AvailabilityZone, MapPublicIpOnLaunch, Network):
     return template.add_resource(Subnet(
-        "Subnet"+Name.replace("-", "").replace(" ", "").replace("/","").replace(".", "")+Network+AvailabilityZone.replace("-","")+CidrBlock.replace("/","").replace(".", ""),
+        "Subnet"+Name.replace("-", "").replace(" ", "").replace("/","").replace(".", "")+
+            Network+AvailabilityZone.replace("-","")+CidrBlock.replace("/","").replace(".", ""),
         CidrBlock=CidrBlock,
         AvailabilityZone=AvailabilityZone,
         MapPublicIpOnLaunch=MapPublicIpOnLaunch,

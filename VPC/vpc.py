@@ -1,5 +1,4 @@
 from troposphere import Parameter, Ref, Tags, Template
-from troposphere.ec2 import Route
 from troposphere.ec2 import VPCGatewayAttachment
 from troposphere.ec2 import InternetGateway
 from troposphere.ec2 import VPC
@@ -92,6 +91,9 @@ if "Yes" in CIDRInfo['NatHA']:
         ### Add Subnet to the Private RoteTable
         addSubnetRouteTableAssociation(t, priv_subnet, PrivateRouteTableArray[priv_subnet.AvailabilityZone])
 else :
+    ### CIDRInfo['NatHA'] = No so we don't need to have NAT HA, we will only create 1 NAT gateway and have
+    ### all private subnet point to it.
+
     ### Create the NAT Gateway
     NatGateway = addNatGateway(t, PublicSubnets[0])
     PrivateRouteTable = addRouteTable(t, "allAZ", "Private")
