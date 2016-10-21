@@ -6,7 +6,8 @@ from troposphere.ec2 import VPC
 from troposphere import Ref, Template, Tags, Join
 
 from data import  CIDRInfo, PrivateSubnetsData, PublicSubnetsData
-from fonctions import addRouteTable, addNatGateway, addSubnetRouteTableAssociation, addSubnet, addRouteToRouteTableIGW, addRouteToRouteTableNAT
+from fonctions import addRouteTable, addNatGateway, addSubnetRouteTableAssociation, addSubnet, addRouteToRouteTableIGW, \
+                        addRouteToRouteTableNAT
 
 t = Template()
 
@@ -62,10 +63,12 @@ PublicRouteTable = addRouteTable(t, "AllAZ","Public")
 
 
 ### Add a route to the internet from the Public Route Table
-PublicRouteToInternetGateway = addRouteToRouteTableIGW(t, PublicRouteTable, InternetGateway, CIDRInfo['all'], "PublicRoute")
+PublicRouteToInternetGateway = addRouteToRouteTableIGW(t, PublicRouteTable, InternetGateway, CIDRInfo['all'],
+                                                        "PublicRoute")
 
 ### Add all public subnets to the RouteTable
-PublicRouteTableSubnetAssociations = [addSubnetRouteTableAssociation(t, subnet, PublicRouteTable) for subnet in PublicSubnets]
+PublicRouteTableSubnetAssociations = [addSubnetRouteTableAssociation(t, subnet, PublicRouteTable)
+                                        for subnet in PublicSubnets]
 
 if "Yes" in CIDRInfo['NatHA']:
     ### to be fully HA, we need to create a NAT per AZ.
@@ -79,9 +82,13 @@ if "Yes" in CIDRInfo['NatHA']:
     for priv_subnet in PrivateSubnets:
         if PrivateRouteTableArray.has_key(priv_subnet.AvailabilityZone) == False:
             ### We only need to create one routetable per AZ
-            PrivateRouteTableArray[priv_subnet.AvailabilityZone] = addRouteTable(t, priv_subnet.AvailabilityZone,"Private")
+            PrivateRouteTableArray[priv_subnet.AvailabilityZone] = addRouteTable(t, priv_subnet.AvailabilityZone,
+                                                                                  "Private")
             ### Create Route and add NATGateway and RouteTable
-            addRouteToRouteTableNAT(t, PrivateRouteTableArray[priv_subnet.AvailabilityZone], NatGatewayArray[priv_subnet.AvailabilityZone], CIDRInfo['all'], "PrivateRouteToNatGateway"+priv_subnet.AvailabilityZone.replace("-", ""))
+            addRouteToRouteTableNAT(t, PrivateRouteTableArray[priv_subnet.AvailabilityZone],
+                                        NatGatewayArray[priv_subnet.AvailabilityZone], CIDRInfo['all'],
+                                                    "PrivateRouteToNatGateway"
+                                                    +priv_subnet.AvailabilityZone.replace("-", ""))
         ### Add Subnet to the Private RoteTable
         addSubnetRouteTableAssociation(t, priv_subnet, PrivateRouteTableArray[priv_subnet.AvailabilityZone])
 else :
@@ -89,7 +96,8 @@ else :
     NatGateway = addNatGateway(t, PublicSubnets[0])
     PrivateRouteTable = addRouteTable(t, "allAZ", "Private")
     ### Create Route and add NATGateway and RouteTable
-    myprivateRoute = addRouteToRouteTableNAT(t, PrivateRouteTable, NatGateway, CIDRInfo['all'], "PrivateRouteToNatGateway")
+    myprivateRoute = addRouteToRouteTableNAT(t, PrivateRouteTable, NatGateway, CIDRInfo['all'],
+                                                "PrivateRouteToNatGateway")
 
     ### Add Subnet to the Private RoteTable
     for priv_subnet in PrivateSubnets:
