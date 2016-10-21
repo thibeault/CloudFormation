@@ -71,13 +71,17 @@ if "Yes" in CIDRInfo['NatHA']:
     ### to be fully HA, we need to create a NAT per AZ.
     NatGatewayArray = {}
     for pub_subnet in PublicSubnets:
-        NatGatewayArray[pub_subnet.AvailabilityZone] = addNatGateway(t, pub_subnet)
+        if NatGatewayArray.has_key(pub_subnet.AvailabilityZone) == False:
+            ### We only need to create a NAT per AZ
+            NatGatewayArray[pub_subnet.AvailabilityZone] = addNatGateway(t, pub_subnet)
 
     PrivateRouteTableArray = {}
     for priv_subnet in PrivateSubnets:
-        PrivateRouteTableArray[priv_subnet.AvailabilityZone] = addRouteTable(t, priv_subnet.AvailabilityZone,"Private")
-        ### Create Route and add NATGateway and RouteTable
-        addRouteToRouteTableNAT(t, PrivateRouteTableArray[priv_subnet.AvailabilityZone], NatGatewayArray[priv_subnet.AvailabilityZone], CIDRInfo['all'], "PrivateRouteToNatGateway"+priv_subnet.AvailabilityZone.replace("-", ""))
+        if PrivateRouteTableArray.has_key(priv_subnet.AvailabilityZone) == False:
+            ### We only need to create one routetable per AZ
+            PrivateRouteTableArray[priv_subnet.AvailabilityZone] = addRouteTable(t, priv_subnet.AvailabilityZone,"Private")
+            ### Create Route and add NATGateway and RouteTable
+            addRouteToRouteTableNAT(t, PrivateRouteTableArray[priv_subnet.AvailabilityZone], NatGatewayArray[priv_subnet.AvailabilityZone], CIDRInfo['all'], "PrivateRouteToNatGateway"+priv_subnet.AvailabilityZone.replace("-", ""))
         ### Add Subnet to the Private RoteTable
         addSubnetRouteTableAssociation(t, priv_subnet, PrivateRouteTableArray[priv_subnet.AvailabilityZone])
 else :

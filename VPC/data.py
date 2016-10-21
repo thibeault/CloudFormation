@@ -24,13 +24,13 @@ PublicSubnetsData = [
     }, {
         "CidrBlock": "10.15.1.0/24",
         "Name": "ECS",
-        "AvailabilityZone": "us-east-1c",
+        "AvailabilityZone": "us-east-1b",
         "MapPublicIpOnLaunch": "true",
         "Network": "Public"
     }, {
         "CidrBlock": "10.15.2.0/24",
         "Name": "ECS",
-        "AvailabilityZone": "us-east-1d",
+        "AvailabilityZone": "us-east-1c",
         "MapPublicIpOnLaunch": "true",
         "Network": "Public"
     }, {
@@ -55,13 +55,13 @@ PrivateSubnetsData = [
     }, {
         "CidrBlock": "10.15.11.0/22",
         "Name": "ECS",
-        "AvailabilityZone": "us-east-1c",
+        "AvailabilityZone": "us-east-1b",
         "MapPublicIpOnLaunch": "false",
         "Network": "Private"
     }, {
         "CidrBlock": "10.15.15.0/22",
         "Name": "ECS",
-        "AvailabilityZone": "us-east-1d",
+        "AvailabilityZone": "us-east-1c",
         "MapPublicIpOnLaunch": "false",
         "Network": "Private"
     }, {

@@ -1,4 +1,4 @@
-# Basic VPC setup - AWS Scenario 2 - VPC with Public and Private Subnets (NAT)
+# Create basic VPC setup - AWS Scenario 2 - VPC with Public and Private Subnets (NAT)
 
 https://drive.google.com/file/d/0B3xEJ9a0fctDY2FfZ1gxTHRoaEU/view?usp=sharing
 
@@ -10,7 +10,8 @@ pip install awacs
 ```
 
 Update the data.py with your subnet information, note that each AWS Account has different AZ name, make sure to set yours.
-Also make sure the CIDR are unic to your account
+Also make sure the CIDR are unique to your account. If you don't, the Stack will simply rollback and give you a message like this: "Value (us-east-1d) for parameter availabilityZone is invalid. Subnets can currently only be created in the following availability zones: us-east-1a, us-east-1b, us-east-1c, us-east-1e."
+
 
 just run: 
 ```bash
