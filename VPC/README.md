@@ -9,7 +9,7 @@ pip install troposphere
 pip install awacs
 ```
 
-Update the data.py with your subnet information, not that each AWS Account has different AZ name, make sure to set yours.
+Update the data.py with your subnet information, note that each AWS Account has different AZ name, make sure to set yours.
 Also make sure the CIDR are unic to your account
 
 just run: 
