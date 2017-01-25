@@ -26,3 +26,7 @@ and use the console or CLI to create your stack
 [Troposphere](https://github.com/cloudtools/troposphere)
 
 [CloudFormation](https://aws.amazon.com/documentation/cloudformation/)
+
+Author Information
+------------------
+thibeault@gmail.com
