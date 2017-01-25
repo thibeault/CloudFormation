@@ -1,4 +1,7 @@
 # Create basic ECS setup -
+
+The following are just random notes...
+
 # IAM Role: ECS-Cluster
 # Security Group: for ECS EC2
 # ECS wizard run: https://console.aws.amazon.com/ecs/home#/firstRun
@@ -92,7 +95,7 @@ echo ECS_CLUSTER=ECS-Dev >> /etc/ecs/ecs.config
 #
 #
 #
-# docker login -u AWS -p AQECAHjB7/igwMg4NPwaurxSIYx4HfnxuGc/48bDwvwDpNYWZgAAAuUwggLhBgkqhkiG9w0BBwagggLSMIICzgIBADCCAscGCSqGSIb3DQEHATAeBglghkgBZQMEAS4wEQQMmgg0+EOHgfTDPSmaAgEQgIICmCBf/pQ9gf70fH+AvP7cRGwmseQB3VH+oBw14AqckhkdsJ8alqQrYmSD1CXCWG6ThXY6eqnlLsPn7QLM7y5RQkLbRIDlhU74zXF6fOwoabTOAjqZIEjT5QWmOO6nRyoesrPObI3QEEEQ9GajttKdvuJb8rZUHr/udjK7T82A3ojzyxqOYWq4QBe8hTB5xA0TvNOx5jHoKZpssPqaR2kZA0x6/PJ0X2RiqiWjN9V+ZwEtjD1H9SVi4S3s4sf6KE5QQcQfZ45K0ajHlmzyG/8mN6D0PF3U40zKq1rf/0TnCXq48FQwHcC3axWS8XHZQZ0MNBNvmuVFGWPAJsbQk7EknqkQqypDGBKiDnXcakJcr2FTDpj0DWsGqtB1DXPwswvm2yFM07bok7JKanooRwgDAhEercMWDDVt3sro0ThE4sYiKBcYAEnqly5eQ9ErKcdqZtxT+Ct2WRNAApFOpSvIxZqYRQMsEcwP0W395hHQsPQ9ep978hqmzrOmfMTZ3whMD+MEV7G+rRzOiWJrwXJPLpalT1lKzpD4RDlC+YUCLAGqveFNEs5LIkf2J3uowO22PqcZSFz0z1hrGwum/2IeVE3+nw+m5uNkrUyfRxoOTcfqB0dCWL7blDJmY3KKXYT6ZstgFixKQci3qI9r9qgzERRFiJDASYCYvNjWzDAaa6SdJ8Cy4fhjfU39cscwGPGPWEr9HOnd/a7A6tBErWkWEWhavV69xIUtbOJklMX37d3h9kBCe8gkp/vX/P67Lil4ImOQ2nq1PrN2BVdvKPgSyobrcjS69jsx9eaS4uJtl2LQ7+VH4yna/zGVAytAES4w4rEkcr25EyF76uaFLCiwi3SBRZL1sVrTTTBVOsXMLeRu/4oCkev3pv8= -e none https://724662056237.dkr.ecr.us-east-2.amazonaws.com
+# docker login -u AWS -p AQECAHjB7/i...v3pv8= -e none https://724662056237.dkr.ecr.us-east-2.amazonaws.com
 
 #
 #
