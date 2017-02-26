@@ -16,8 +16,13 @@ def readConfigFile(filename):
     parser = argparse.ArgumentParser()
     parser.add_argument(filename)
     args = parser.parse_args()
-    with open(args.filename) as file:
-        return json.load(file)
+    try:
+        with open(args.filename) as file:
+            return json.load(file)
+    except ValueError:
+        print("ERROR: Unable to read your JSON, please check your configuration file.")
+        exit(1)
+
 
 ### Add subnet to the routeTable
 def addSubnetRouteTableAssociation(template, subnet, routeTable):
