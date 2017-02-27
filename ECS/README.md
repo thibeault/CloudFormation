@@ -1,3 +1,13 @@
+# Create basic ECS Cluster - EC2 Autoscaling Group - Spot Fleet Autoscaling Group
+
+Still a work in progress, I got the ECS + basic EC2 Autoscaling group done, still need to clean this up and then create
+the scripts for creating the Spot Fleet autoscaling group.
+
+The plan is to have your ECS cluster running on Spot Fleet in HA leveraging multiple instance types to be resiliant to
+spot market. With a EC2 Autoscaling group setup to pickup if for some reason the Spot fleet can't self heal. 
+
+
+
 # Create basic ECS setup -
 
 The following are just random notes...
