@@ -70,30 +70,15 @@ def getSecurityGroups(vpc, data):
         exit(1)
 
 
-def old():
-    print ("VPC id: "+vpc.id)
-    securityGroupFilter = data['BotoFilterInfo']['SecurityGroupName']
-    if not securityGroupFilter:
-        ## Using Default SG for this VPC
-        securityGroupFilter = "default"
-
-    print("SecurityGroupFilter: "+ securityGroupFilter)
-
-    securityGroups = vpc.security_groups.filter(Filters=[{"Name":"group-name", "Values": [securityGroupFilter]}])
-
-    print(securityGroups[0].id)
-    if len(securityGroups) == 1:
-        return securityGroups[0]
-    elif len(securityGroups) > 1:
-        print >> sys.stderr, ("ERROR: At this time you can only have 1 security group, please update BotoFilterInfo.SecurityGroupName")
-        exit(1)
-
 ### getSubnets(vpc,data):
 def getSubnets(vpc, data):
     subnetfilter = [{'Name':'tag:Network', 'Values':[data['BotoFilterInfo']['SubnetName']]}]
 
     try:
-        subnets = list(vpc.subnets.filter(Filters=subnetfilter))
+        if data['BotoFilterInfo']['SubnetName']:
+            subnets = list(vpc.subnets.filter(Filters=subnetfilter))
+        else:
+            subnets = list(vpc.subnets.all())
         if len(subnets) > 0:
             return subnets
         else:
