@@ -20,7 +20,7 @@ def ini_ec2_Boto(data):
     if data['BotoInit']['ProfileName']:
         boto3.setup_default_session(profile_name=data['BotoInit']['ProfileName'])
     if data['BotoInit']['RegionName']:
-        boto_ec2 = boto3.resource('ec2', region_name=data['BotoInit']['us-east-1'])
+        boto_ec2 = boto3.resource('ec2', region_name=data['BotoInit']['RegionName'])
     else:
         boto_ec2 = boto3.resource('ec2')
     return boto_ec2

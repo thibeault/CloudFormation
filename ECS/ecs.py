@@ -9,8 +9,8 @@ from troposphere.ecs import Cluster
 from troposphere.cloudwatch import Alarm, MetricDimension
 from troposphere.autoscaling import LaunchConfiguration
 from troposphere.autoscaling import AutoScalingGroup, Metadata, ScalingPolicy
-from fonctions import readConfigFile
-from fonctions import getVPC, getSecurityGroups, getSubnets
+from functions import readConfigFile
+from functions import getVPC, getSecurityGroups, getSubnets
 
 # Loading the config file based on the argument passed
 data = readConfigFile('filename')
