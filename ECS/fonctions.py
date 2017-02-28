@@ -18,9 +18,9 @@ def readConfigFile(filename):
 ## initialize the ec2 boto3 base on what you have in your config file,
 def ini_ec2_Boto(data):
     if data['BotoInit']['ProfileName']:
-        boto3.setup_default_session(profile_name='t-bo')
+        boto3.setup_default_session(profile_name=data['BotoInit']['ProfileName'])
     if data['BotoInit']['RegionName']:
-        boto_ec2 = boto3.resource('ec2', region_name='us-east-1')
+        boto_ec2 = boto3.resource('ec2', region_name=data['BotoInit']['us-east-1'])
     else:
         boto_ec2 = boto3.resource('ec2')
     return boto_ec2
