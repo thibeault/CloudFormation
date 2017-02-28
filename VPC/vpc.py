@@ -5,13 +5,13 @@ from troposphere import Template
 from troposphere.ec2 import VPCGatewayAttachment
 from troposphere.ec2 import InternetGateway
 from troposphere.ec2 import VPC
-from fonctions import readConfigFile
-from fonctions import addRouteTable
-from fonctions import addNatGateway
-from fonctions import addSubnetRouteTableAssociation
-from fonctions import addSubnet
-from fonctions import addRouteToRouteTableIGW
-from fonctions import addRouteToRouteTableNAT
+from functions import readConfigFile
+from functions import addRouteTable
+from functions import addNatGateway
+from functions import addSubnetRouteTableAssociation
+from functions import addSubnet
+from functions import addRouteToRouteTableIGW
+from functions import addRouteToRouteTableNAT
 
 # Loading the config file based on the argument passed
 data = readConfigFile('filename')
