@@ -5,13 +5,13 @@
       "EC2InstanceType": "t2.micro",
       "AssociatePublicIpAddress": "false",
       "DetailMonitoring": "false",
-      "DesiredCapacity":"4",
-      "MinSize": "4",
-      "MaxSize": "4"
+      "DesiredCapacity":"1",
+      "MinSize": "0",
+      "MaxSize": "2"
    },
    "BotoFilterInfo": {
-      "VpcName": "thibeault-ecs*",
-      "SecurityGroupName": "default",
+      "VpcName": "thibeault-ecs-vpc",
+      "SecurityGroupName": "",
       "SubnetName": "*Private*"
    },
    "BotoInit": {

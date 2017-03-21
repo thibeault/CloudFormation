@@ -125,7 +125,7 @@ EcsClusterRole = t.add_resource(Role(
     RoleName='EcsClusterRole',
     Path='/',
     ManagedPolicyArns=[
-        'arn:aws:iam::aws:policy/service-role/AmazonEC2RoleforSSM'
+        'arn:aws:iam::aws:policy/AmazonEC2ContainerServiceFullAccess'
     ],
     AssumeRolePolicyDocument={'Version': '2012-10-17',
                               'Statement': [{'Action': 'sts:AssumeRole',
@@ -179,7 +179,7 @@ ContainerInstances = t.add_resource(LaunchConfiguration(
                     '01_add_instance_to_cluster': {'command': Join('',
                                                                    ['#!/bin/bash\n',  # NOQA
                                                                     'echo ECS_CLUSTER=',  # NOQA
-                                                                    Ref('ECSCluster'),  # NOQA
+                                                                    data['ClusterInfo']['Name'],  # NOQA
                                                                     ' >> /etc/ecs/ecs.config'])},  # NOQA
                     '02_install_ssm_agent': {'command': Join('',
                                                              ['#!/bin/bash\n',
@@ -260,7 +260,6 @@ EC2CPUScalingPolicy = t.add_resource(ScalingPolicy(
     Cooldown= "100",
     ScalingAdjustment= "1",
 ))
-
 
 print(t.to_json())
 #print("OK!!!")
