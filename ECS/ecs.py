@@ -180,13 +180,7 @@ ContainerInstances = t.add_resource(LaunchConfiguration(
                                                                    ['#!/bin/bash\n',  # NOQA
                                                                     'echo ECS_CLUSTER=',  # NOQA
                                                                     data['ClusterInfo']['Name'],  # NOQA
-                                                                    ' >> /etc/ecs/ecs.config'])},  # NOQA
-                    '02_install_ssm_agent': {'command': Join('',
-                                                             ['#!/bin/bash\n',
-                                                              'yum -y update\n',  # NOQA
-                                                              'curl https://amazon-ssm-eu-west-1.s3.amazonaws.com/latest/linux_amd64/amazon-ssm-agent.rpm -o amazon-ssm-agent.rpm\n',  # NOQA
-                                                              'yum install -y amazon-ssm-agent.rpm'  # NOQA
-                                                              ])}
+                                                                    ' >> /etc/ecs/ecs.config'])}
                 }
             )
         }
