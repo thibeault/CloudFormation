@@ -128,6 +128,13 @@ Also ensure the CIDR are unique to your account. If you don't, the Stack will si
 just run: 
 ```bash
 python vpc.py > myVPCCloudFormation.json
+
+python ecs.py config/ecs-config.json > myECSCloudFormation.json
+
+CFTEMPLATE=$(cat  myECSCloudFormation.json)
+aws --profile t-bo --region us-east-1 cloudformation create-stack --stack-name ecs-cluster --template-body "$CFTEMPLATE" --capabilities CAPABILITY_NAMED_IAM
+
+
 ```
 
 and use the console or CLI to create your stack

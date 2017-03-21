@@ -6,13 +6,13 @@
       "AssociatePublicIpAddress": "false",
       "DetailMonitoring": "false",
       "DesiredCapacity":"1",
-      "MinSize": "0",
+      "MinSize": "1",
       "MaxSize": "2"
    },
    "BotoFilterInfo": {
-      "VpcName": "thibeault-ecs-vpc",
+      "VpcName": "",
       "SecurityGroupName": "",
-      "SubnetName": "*Private*"
+      "SubnetName": ""
    },
    "BotoInit": {
       "ProfileName": "t-bo",

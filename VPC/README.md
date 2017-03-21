@@ -17,6 +17,11 @@ In config/vpc-config.json, set NatHA=Yes, to create an Availability Zone-indepen
 just run: 
 ```bash
 python vpc.py confg/vpc-config.json > myVPCCloudFormation.json
+
+CFTEMPLATE=$(cat  myVPCCloudFormation.json)
+aws --profile t-bo --region us-east-1 cloudformation create-stack --stack-name ecs-vpc --template-body "$CFTEMPLATE"
+
+
 ```
 
 and use the console or CLI to create your stack
