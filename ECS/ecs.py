@@ -180,7 +180,11 @@ ContainerInstances = t.add_resource(LaunchConfiguration(
                                                                    ['#!/bin/bash\n',  # NOQA
                                                                     'echo ECS_CLUSTER=',  # NOQA
                                                                     data['ClusterInfo']['Name'],  # NOQA
-                                                                    ' >> /etc/ecs/ecs.config'])}
+                                                                    ' >> /etc/ecs/ecs.config'])},  # NOQA
+                    '02_install_ssm_agent': {'command': Join('',
+                                                             ['#!/bin/bash\n',
+                                                              'yum -y update\n' # NOQA
+                                                              ])}
                 }
             )
         }
@@ -223,7 +227,7 @@ ECSAutoScalingGroup = t.add_resource(AutoScalingGroup(
     AvailabilityZones=AutoScalingGroupAvailabilityZones,
     LaunchConfigurationName=Ref('ContainerInstances'),
     Tags=[{'Key':'Name1','Value':'MyAutoScalingGroup','PropagateAtLaunch':'false'},
-         {'Key':'Name','Value':'ECSInstancesEC2','PropagateAtLaunch':'true'}],
+          {'Key':'Name','Value':'ECSInstancesEC2','PropagateAtLaunch':'true'}],
     #Tags=Tags(
     #    Name="MyAutoScalingGroup",
     #),
@@ -239,8 +243,8 @@ CloudWatchEC2CPUAlarm = t.add_resource(Alarm(
     AlarmActions= [Ref('EC2CPUScalingPolicy'),],
     Namespace= "AWS/EC2",
     Dimensions= [ MetricDimension(
-            Name= "AutoScalingGroupName",
-            Value= Ref('ECSAutoScalingGroup')
+        Name= "AutoScalingGroupName",
+        Value= Ref('ECSAutoScalingGroup')
     )],
     ComparisonOperator= "GreaterThanThreshold",
     MetricName= "CPUUtilization"

@@ -8,14 +8,17 @@
 ## 4 -  to be stack name ex: ecs-cluster
 ## ./create-update.sh myECSCloudFormation.json t-bo us-east-1  ecs-cluster
 
+## Should add at the end something to show all the events
+## aws --profile nike --region us-east-1 cloudformation describe-stack-events --stack-name arn:aws:cloudformation:us-east-1::stack/ecs-vpc/7d8bc632-0f1d-11e7-8794-300c219a3c36
+
 RETRY_LIMIT=60
 WAIT_TIME=20s
 RETRY_COUNT=0
 SUCCESS=0
 LAST_STATUS=""
-status_re="{.*\"StackStatus\": \"(.*)\",.*}"  ## "StackStatus": "ROLLBACK_COMPLETE",
-deployid_re="{.*StackId\": \"(arn.*[A-Za-z0-9])\".*}" ## "StackId": "arn:aws:cloudformation:us-east-1::stack/ecs-cluster/4ff57472-0e87-11e7-86cf-50d5cd795cfd"
-stackName_re="{.*\"StackName\": \"("${4}")\",.*}" ## "StackName": "ecs-cluster",
+status_re="\{.*\"StackStatus\": \"(.*)\",.*\}"  ## "StackStatus": "ROLLBACK_COMPLETE",
+deployid_re="\{.*StackId\": \"(arn.*[A-Za-z0-9])\".*\}" ## "StackId": "arn:aws:cloudformation:us-east-1::stack/ecs-cluster/4ff57472-0e87-11e7-86cf-50d5cd795cfd"
+stackName_re="\{.*\"StackName\": \"("${4}")\",.*\}" ## "StackName": "ecs-cluster",
 cloudformation_action="create-stack"
 
 # Check if the initiated stack is already there or not
@@ -56,7 +59,14 @@ do
     then
       SUCCESS=1
       break
+    elif [ $LAST_STATUS == "UPDATE_COMPLETE" ]
+    then
+      SUCCESS=1
+      break
     elif [ $LAST_STATUS == "ROLLBACK_COMPLETE" ]
+    then
+      break
+    elif [ $LAST_STATUS == "UPDATE_ROLLBACK_COMPLETE" ]
     then
       break
     fi
