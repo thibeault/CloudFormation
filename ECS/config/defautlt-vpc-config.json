@@ -7,7 +7,8 @@
       "DetailMonitoring": "false",
       "DesiredCapacity":"1",
       "MinSize": "1",
-      "MaxSize": "2"
+      "MaxSize": "2",
+      "IamInstanceProfile": "arn:aws:iam::724662056237:instance-profile/ecs-roles-EC2InstanceProfile-1VQCNICOXP90S"
    },
    "BotoFilterInfo": {
       "VpcName": "",

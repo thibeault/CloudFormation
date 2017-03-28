@@ -11,6 +11,7 @@ from troposphere.autoscaling import LaunchConfiguration
 from troposphere.autoscaling import AutoScalingGroup, Metadata, ScalingPolicy
 from functions import readConfigFile
 from functions import getVPC, getSecurityGroups, getSubnets
+import troposphere.ec2 as ec2
 
 # Loading the config file based on the argument passed
 data = readConfigFile('filename')
@@ -68,78 +69,6 @@ ECSCluster = t.add_resource(Cluster(
 ))
 
 
-# Policy Amazon EC2 Container Registry - Enable our ECS Cluster to work with the ECR
-PolicyEcr = t.add_resource(PolicyType(
-    'PolicyEcr',
-    PolicyName='EcrPolicy',
-    PolicyDocument={'Version': '2012-10-17',
-                    'Statement': [{'Action': ['ecr:GetAuthorizationToken'],
-                                   'Resource': ['*'],
-                                   'Effect': 'Allow'},
-                                  {'Action': ['ecr:GetDownloadUrlForLayer',
-                                              'ecr:BatchGetImage',
-                                              'ecr:BatchCheckLayerAvailability'
-                                              ],
-                                   'Resource': [
-                                       '*'],
-                                   'Effect': 'Allow',
-                                   'Sid': 'AllowPull'},
-                                  ]},
-    Roles=[Ref('EcsClusterRole')],
-))
-
-# Policy Amazon EC2 Container Service - Enable our EC2 to work with ECS Cluster
-# TODO: update policy to only allow to work with specific cluster we are creating vs "Resource: *"
-PolicyEcs = t.add_resource(PolicyType(
-    'PolicyEcs',
-    PolicyName='EcsPolicy',
-    PolicyDocument={'Version': '2012-10-17',
-                    'Statement': [
-                        {'Action': ['ecs:CreateCluster',
-                                    'ecs:RegisterContainerInstance',
-                                    'ecs:DeregisterContainerInstance',
-                                    'ecs:DiscoverPollEndpoint',
-                                    'ecs:Submit*',
-                                    'ecs:Poll',
-                                    'ecs:StartTelemetrySession'],
-                         'Resource': '*',
-                         'Effect': 'Allow'}
-                    ]},
-    Roles=[Ref('EcsClusterRole')],
-))
-
-# Policy Amazon CloudWatch - Enable our ECS Cluster/EC2 to send data to CloudWatch
-# TODO: update policy to only allow to work with specific cluster we are creating vs "Resource: *"
-PolicyCloudwatch = t.add_resource(PolicyType(
-    'PolicyCloudwatch',
-    PolicyName='Cloudwatch',
-    PolicyDocument={'Version': '2012-10-17',
-                    'Statement': [{'Action': ['cloudwatch:*'], 'Resource': '*',
-                                   'Effect': 'Allow'}]},
-    Roles=[Ref('EcsClusterRole')],
-))
-
-# Role our EC2 instance will take on to work with ECR, ECS and CloudWatch
-EcsClusterRole = t.add_resource(Role(
-    'EcsClusterRole',
-    RoleName='EcsClusterRole',
-    Path='/',
-    ManagedPolicyArns=[
-        'arn:aws:iam::aws:policy/AmazonEC2ContainerServiceFullAccess'
-    ],
-    AssumeRolePolicyDocument={'Version': '2012-10-17',
-                              'Statement': [{'Action': 'sts:AssumeRole',
-                                             'Principal': {'Service': 'ec2.amazonaws.com'},
-                                             'Effect': 'Allow',
-                                             }]}
-))
-
-# Linking our EC2 with the Role
-EC2InstanceProfile = t.add_resource(InstanceProfile(
-    'EC2InstanceProfile',
-    Path='/',
-    Roles=[Ref('EcsClusterRole')],
-))
 
 # Amazon EC2 Launch Configuration
 ContainerInstances = t.add_resource(LaunchConfiguration(
@@ -179,7 +108,7 @@ ContainerInstances = t.add_resource(LaunchConfiguration(
                     '01_add_instance_to_cluster': {'command': Join('',
                                                                    ['#!/bin/bash\n',  # NOQA
                                                                     'echo ECS_CLUSTER=',  # NOQA
-                                                                    data['ClusterInfo']['Name'],  # NOQA
+                                                                    Ref(ecsClusterName_param),  # NOQA
                                                                     ' >> /etc/ecs/ecs.config'])},  # NOQA
                     '02_install_ssm_agent': {'command': Join('',
                                                              ['#!/bin/bash\n',
@@ -210,7 +139,8 @@ ContainerInstances = t.add_resource(LaunchConfiguration(
     ImageId=FindInMap("RegionMap", Ref("AWS::Region"), "AMI"),
     KeyName=data['ClusterInfo']['KeyName'],
     SecurityGroups=SecurityGroups,
-    IamInstanceProfile=Ref('EC2InstanceProfile'),
+    #IamInstanceProfile=Ref('EC2InstanceProfile'),
+    IamInstanceProfile=data['ClusterInfo']['IamInstanceProfile'],
     InstanceType=data['ClusterInfo']['EC2InstanceType'],
     AssociatePublicIpAddress=data['ClusterInfo']['AssociatePublicIpAddress'],
     InstanceMonitoring=data['ClusterInfo']['DetailMonitoring'],
