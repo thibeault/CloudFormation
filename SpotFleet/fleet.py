@@ -8,7 +8,7 @@ from troposphere.iam import Role
 from troposphere.ecs import Cluster
 from troposphere.cloudwatch import Alarm, MetricDimension
 from troposphere.ec2 import SpotFleet
-from troposphere.ec2 import Monitoring
+from troposphere.ec2 import Monitoring, SecurityGroups
 from troposphere.autoscaling import AutoScalingGroup, Metadata, ScalingPolicy
 from functions import readConfigFile
 from functions import getVPC, getSecurityGroups, getSubnets
@@ -26,12 +26,17 @@ vpc = getVPC(data)
 AutoScalingGroupSubnets = []
 AutoScalingGroupAvailabilityZones = []
 SecurityGroups = []
+SecurityGroupArray = []
+NetworkInterfaces = []
+SubnetIds =''
+empty = ''
 
 ## get all security group from VPC matching filter from config
 securityGroups = getSecurityGroups(vpc, data)
 
 for sg in securityGroups:
     SecurityGroups.append(sg.group_id)
+    SecurityGroupArray.append(ec2.SecurityGroups(GroupId=sg.group_id))
 
 ### getting subnets
 subnets = getSubnets(vpc, data)
@@ -39,6 +44,14 @@ subnets = getSubnets(vpc, data)
 for subnet in subnets:
     AutoScalingGroupSubnets.append(subnet.id)
     AutoScalingGroupAvailabilityZones.append(subnet.availability_zone)
+    if SubnetIds == empty:
+        SubnetIds = subnet.id
+    else :
+        SubnetIds = SubnetIds + ", " + subnet.id
+
+#print SubnetIds
+
+NetworkInterfaces.append(ec2.NetworkInterfaces(SubnetId=subnets[0].id, DeleteOnTermination=True, DeviceIndex=0))
 
 #print(str(AutoScalingGroupSubnets))
 #print(str(AutoScalingGroupAvailabilityZones))
@@ -58,45 +71,57 @@ AWS CloudFormation EC2 Spot Fleet\
 
 fleetMonitoring = ec2.Monitoring(Enabled=data['ClusterInfo']['DetailMonitoring'])
 
+
 myFleetLaunchSpecifications = ec2.LaunchSpecifications(
     UserData=Base64(Join('',
-                         ['#!/bin/bash -xe\n',
-                          'yum install -y aws-cfn-bootstrap\n',
-                          '/opt/aws/bin/cfn-init -v ',
-                          '         --stack ',
-                          Ref('AWS::StackName'),
-                          '         --resource ContainerInstances ',
-                          '         --region ',
-                          Ref('AWS::Region'),
-                          '\n',
-                          '/opt/aws/bin/cfn-signal -e $? ',
-                          '         --stack ',
-                          Ref('AWS::StackName'),
-                          '         --resource LaunchSpecifications ',
-                          '         --region ',
-                          Ref('AWS::Region'),
-                          '\n',
-                          'echo ECS_CLUSTER=',  # NOQA
-                           data['ClusterInfo']['Name'],  # NOQA
-                           ' >> /etc/ecs/ecs.config',
+                         ['#!/bin/bash\n',
+                          'echo ECS_CLUSTER=',
+                           data['ClusterInfo']['Name'],
+                           ' >> /etc/ecs/ecs.config\n',
                           ])),
     InstanceType=data['ClusterInfo']['EC2InstanceType'],
+    ImageId=FindInMap("RegionMap", Ref("AWS::Region"), "AMI"),
     KeyName=data['ClusterInfo']['KeyName'],
-    #SecurityGroups=SecurityGroups[0],
-    #IamInstanceProfile=Ref('EC2InstanceProfile'),
-    ImageId="ami-40286957",
+    SecurityGroups=SecurityGroupArray,
+    IamInstanceProfile=ec2.IamInstanceProfile(Arn=data['ClusterInfo']['IamInstanceProfile']),
     Monitoring=fleetMonitoring,
-    WeightedCapacity=data['ClusterInfo']['DesiredCapacity'],
+    #WeightedCapacity=data['ClusterInfo']['DesiredCapacity'],
+    SubnetId=SubnetIds
 
 )
+
+myFleetLaunchSpecifications2 = ec2.LaunchSpecifications(
+    UserData=Base64(Join('',
+                         ['#!/bin/bash\n',
+                          'echo ECS_CLUSTER=',
+                          data['ClusterInfo']['Name'],
+                          ' >> /etc/ecs/ecs.config\n',
+                          ])),
+    InstanceType=data['ClusterInfo']['EC2InstanceType2'],
+    ImageId=FindInMap("RegionMap", Ref("AWS::Region"), "AMI"),
+    KeyName=data['ClusterInfo']['KeyName'],
+    SecurityGroups=SecurityGroupArray,
+    IamInstanceProfile=ec2.IamInstanceProfile(Arn=data['ClusterInfo']['IamInstanceProfile']),
+    Monitoring=fleetMonitoring,
+    #WeightedCapacity=data['ClusterInfo']['DesiredCapacity'],
+    SubnetId=SubnetIds
+
+)
+
+
 
 mySpotFleetRequestConfigData = ec2.SpotFleetRequestConfigData(
-    LaunchSpecifications=[myFleetLaunchSpecifications],
-    SpotPrice="0.067",
+    LaunchSpecifications=[myFleetLaunchSpecifications,myFleetLaunchSpecifications2],
+    SpotPrice="0.108",
     TargetCapacity=data['ClusterInfo']['DesiredCapacity'],
-    IamFleetRole="arn:aws:iam::724662056237:role/aws-ec2-spot-fleet-role",
+    IamFleetRole=data['ClusterInfo']['IamFleetRole'],
     TerminateInstancesWithExpiration=True,
+    AllocationStrategy='diversified',
+
 )
+
+
+
 
 ## SpotFleet
 MySpotFleet = t.add_resource(SpotFleet(
@@ -110,4 +135,4 @@ MySpotFleet = t.add_resource(SpotFleet(
 
 
 print(t.to_json())
-#print("OK!!!")
+#print("OK!!! ")
