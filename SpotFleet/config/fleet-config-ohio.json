@@ -1,0 +1,42 @@
+{
+   "ClusterInfo":{
+      "Name": "ECS-Dev",
+      "KeyName": "ted-ohio",
+      "EC2InstanceType": "m4.large",
+      "EC2InstanceType2": "m4.xlarge",
+      "AssociatePublicIpAddress": "false",
+      "DetailMonitoring": "false",
+      "DesiredCapacity":"1",
+      "MinSize": "1",
+      "MaxSize": "1",
+      "IamInstanceProfile": "arn:aws:iam::470398023813:instance-profile/ecs-cluster-EC2InstanceProfile-1NY3QZGYWFU9J",
+      "IamFleetRole": "arn:aws:iam::470398023813:role/aws-ec2-spot-fleet-role"
+   },
+   "BotoFilterInfo": {
+      "VpcName": "Nike-ecs-vpc",
+      "SecurityGroupName": "",
+      "SubnetName": "*Private*"
+   },
+   "BotoInit": {
+      "ProfileName": "nike",
+      "RegionName": "us-east-2"
+   },
+   "Tags":{
+      "Name": "fleet-ecs",
+      "Env": "Dev",
+      "Owner": "ethibeault@prokarma.com"
+   },
+   "RegionMap":{
+      "us-east-1": {"AMI": "ami-275ffe31"},
+      "us-east-2": {"AMI": "ami-62745007"},
+      "us-west-1": {"AMI": "ami-689bc208"},
+      "us-west-2": {"AMI": "ami-62d35c02"},
+      "eu-west-1": {"AMI": "ami-95f8d2f3"},
+      "eu-west-2": {"AMI": "ami-bf9481db"},
+      "eu-central-1": {"AMI": "ami-085e8a67"},
+      "ap-northeast-1": {"AMI": "ami-f63f6f91"},
+      "ap-southeast-1": {"AMI": "ami-b4ae1dd7"},
+      "ap-southeast-2": {"AMI": "ami-fbe9eb98"},
+      "ca-central-1": {"AMI": "ami-ee58e58a"}
+   }
+}
