@@ -1,5 +1,5 @@
 #from troposphere import Base64, Join
-from troposphere import Ref, Template, Parameter, Tags, FindInMap
+from troposphere import Ref, Template, Parameter, Tags, FindInMap, Output, GetAtt
 #from troposphere.cloudformation import Init, InitConfig, InitFiles, InitFile
 #from troposphere.cloudformation import InitServices, InitService
 from troposphere.iam import PolicyType
@@ -20,22 +20,15 @@ data = readConfigFile('filename')
 t = Template()
 t.add_version('2010-09-09')
 
-################### Getting values from config file ####################
-EcsClusterRole = 'TedEcsClusterRole'
-ecsManagedPolicyArns = ['arn:aws:iam::aws:policy/AmazonEC2ContainerServiceFullAccess']
-ecsPrincipalService = 'ec2.amazonaws.com'
-
-EcsSpotFleetRole = 'TedEcsSpotFleetRole'
-spotFleetManagedPolicyArns=['arn:aws:iam::aws:policy/service-role/AmazonEC2SpotFleetRole']
-spotFleetPrincipalService = 'spotfleet.amazonaws.com'
-####################
-
-
-
 t.add_description("""\
-AWS CloudFormation ECS Cluster EC2 & Spot Fleet Roles\
+AWS CloudFormation ECS Cluster EC2 & Spot Fleet Roles for EDE\
 """)
 
+# Role our EC2 instance will take on to work with ECR, ECS and CloudWatch
+EcsClusterRole = t.add_resource(createRole(data["Roles"]["EcsClusterRoleName"],
+                                           data["Roles"]["ecsManagedPolicyArns"],
+                                           data["Roles"]["ecsPrincipalService"]
+                                           ))
 
 
 # Policy Amazon EC2 Container Registry - Enable our ECS Cluster to work with the ECR
@@ -89,8 +82,6 @@ PolicyCloudwatch = t.add_resource(PolicyType(
     Roles=[Ref(EcsClusterRole)],
 ))
 
-# Role our EC2 instance will take on to work with ECR, ECS and CloudWatch
-EcsClusterRole = t.add_resource(createRole(EcsClusterRole, ecsManagedPolicyArns, ecsPrincipalService))
 
 
 
@@ -103,7 +94,29 @@ EC2InstanceProfile = t.add_resource(InstanceProfile(
 
 
 
-SpotFleetRole = t.add_resource(createRole(EcsSpotFleetRole, spotFleetManagedPolicyArns, spotFleetPrincipalService))
+SpotFleetRole = t.add_resource(createRole(data["Roles"]["EcsSpotFleetRoleName"],
+                                          data["Roles"]["spotFleetManagedPolicyArns"],
+                                          data["Roles"]["spotFleetPrincipalService"]
+                                          ))
 
+
+
+t.add_output([
+    Output(
+        "ArnSpotfleet",
+        Description="The ARN of the Spot Fleet Role",
+        Value=GetAtt(SpotFleetRole, "Arn")
+    ),
+    Output(
+        "ArnEc2InstanceProfile",
+        Description="The ARN of the ECS Cluster Role InstanceProfile",
+        Value=GetAtt(EC2InstanceProfile, "Arn")
+    ),
+    Output(
+        "ArnEcsClusterRole",
+        Description="The ARN of the ECS Cluster Role",
+        Value=GetAtt(EcsClusterRole, "Arn")
+    )
+])
 
 print(t.to_json())

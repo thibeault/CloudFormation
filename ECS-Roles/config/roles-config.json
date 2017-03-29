@@ -1,7 +1,11 @@
-
 {
-  "BotoInit": {
-    "ProfileName": "t-bo",
-    "RegionName": "us-east-1"
+  "Roles":
+  {
+    "EcsClusterRoleName": "EDEEcsClusterRole",
+    "ecsManagedPolicyArns": ["arn:aws:iam::aws:policy/AmazonEC2ContainerServiceFullAccess"],
+    "ecsPrincipalService": "ec2.amazonaws.com",
+    "EcsSpotFleetRoleName": "EDEEcsSpotFleetRole",
+    "spotFleetManagedPolicyArns": ["arn:aws:iam::aws:policy/service-role/AmazonEC2SpotFleetRole"],
+    "spotFleetPrincipalService": "spotfleet.amazonaws.com"
   }
 }
