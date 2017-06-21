@@ -34,7 +34,7 @@ aws --profile default --region us-east-1 cloudformation create-stack --stack-nam
 
 ```
 
-and use the console or CLI to create your stack
+You can also use the console to create your stack
 
 ### Reference
 
