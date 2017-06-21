@@ -22,14 +22,14 @@ python vpc.py confg/vpc-config.json > myVPCCloudFormation.json
 ## very useful if run within Jenkins... 
 ## $1 == file of the Cloud formation json
 ## $2 == aws profile name
-## $3 == aws region, ex: us-east-2
+## $3 == aws region, ex: us-east-1
 ## $4 == Name of the Cloud Formation Stack
-./create-update.sh myVPCCloudFormation.json pk2 us-east-2  ecs-dev-vpc
+./create-update.sh myVPCCloudFormation.json default us-east-1  ecs-dev-vpc
 
 ## or just run cli yourself
 
 CFTEMPLATE=$(cat  myVPCCloudFormation.json)
-aws --profile t-bo --region us-east-1 cloudformation create-stack --stack-name ecs-vpc --template-body "$CFTEMPLATE"
+aws --profile default --region us-east-1 cloudformation create-stack --stack-name ecs-vpc --template-body "$CFTEMPLATE"
 
 
 ```
