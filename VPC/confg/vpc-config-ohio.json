@@ -1,0 +1,59 @@
+{
+   "EnvInfo":{
+      "Name": "ECS"
+   },
+   "Tags":{
+      "Name": "thibeault-ecs-vpc",
+      "Env": "Dev",
+      "Owner": "thibeault@gmail.com"
+   },
+   "CIDRInfo": {
+      "all": "0.0.0.0/0",
+      "cidr": "10.10.0.0/19",
+      "NatHA": "No"
+   },
+   "PublicSubnetsData": [
+      {
+         "CidrBlock": "10.10.0.0/24",
+         "Name": "ECS",
+         "AvailabilityZone": "us-east-2a",
+         "MapPublicIpOnLaunch": "true",
+         "Network": "Public"
+      },
+      {
+         "CidrBlock": "10.10.1.0/24",
+         "Name": "ECS",
+         "AvailabilityZone": "us-east-2b",
+         "MapPublicIpOnLaunch": "true",
+         "Network": "Public"
+      },
+      {
+         "CidrBlock": "10.10.2.0/24",
+         "Name": "ECS",
+         "AvailabilityZone": "us-east-2c",
+         "MapPublicIpOnLaunch": "true",
+         "Network": "Public"
+      }   ],
+   "PrivateSubnetsData": [
+      {
+         "CidrBlock": "10.10.7.0/22",
+         "Name": "ECS",
+         "AvailabilityZone": "us-east-2a",
+         "MapPublicIpOnLaunch": "false",
+         "Network": "Private"
+      },
+      {
+         "CidrBlock": "10.10.11.0/22",
+         "Name": "ECS",
+         "AvailabilityZone": "us-east-2b",
+         "MapPublicIpOnLaunch": "false",
+         "Network": "Private"
+      },
+      {
+         "CidrBlock": "10.10.15.0/22",
+         "Name": "ECS",
+         "AvailabilityZone": "us-east-2c",
+         "MapPublicIpOnLaunch": "false",
+         "Network": "Private"
+      }   ]
+}
