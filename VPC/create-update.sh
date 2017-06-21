@@ -6,10 +6,10 @@
 ## 2 - profile name
 ## 3 - aws region, ex: us-east-1
 ## 4 -  to be stack name ex: ecs-cluster
-## ./create-update.sh myVPCCloudFormation.json t-bo us-east-1  ecs-vpc
+## ./create-update.sh myVPCCloudFormation.json pk2 us-east-2  ecs-dev-vpc
 
 ## Should add at the end something to show all the events
-## aws --profile nike --region us-east-1 cloudformation describe-stack-events --stack-name arn
+## aws --profile pk2 --region us-east-2 cloudformation describe-stack-events --stack-name arn
 
 RETRY_LIMIT=60
 WAIT_TIME=20s
