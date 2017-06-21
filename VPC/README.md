@@ -18,6 +18,16 @@ just run:
 ```bash
 python vpc.py confg/vpc-config.json > myVPCCloudFormation.json
 
+## use this bash script to create or update the stack, it will return exit(1) on failure and loop until it's completed
+## very useful if run within Jenkins... 
+## $1 == file of the Cloud formation json
+## $2 == aws profile name
+## $3 == aws region, ex: us-east-2
+## $4 == Name of the Cloud Formation Stack
+./create-update.sh myVPCCloudFormation.json pk2 us-east-2  ecs-dev-vpc
+
+## or just run cli yourself
+
 CFTEMPLATE=$(cat  myVPCCloudFormation.json)
 aws --profile t-bo --region us-east-1 cloudformation create-stack --stack-name ecs-vpc --template-body "$CFTEMPLATE"
 
