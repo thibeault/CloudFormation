@@ -1,6 +1,7 @@
 import json
 import argparse
 import boto3
+from troposphere import Join, Ref
 from sys import getsizeof
 
 ### Read config file
@@ -87,3 +88,21 @@ def getSubnets(vpc, data):
     except IndexError as e:
         print("ERROR: Unexpected error: %s" % e)
         exit(1)
+
+### buildUserData
+### If user data from config file is empty it will create the CloudFormation user data needed
+### If not, it will add both user Data
+def buildUserData(instance):
+    newuserdata = ''
+    if instance['UserData']:
+        userdatastr = '\n'.join(instance['UserData'])
+        newuserdata=Join('', [
+            userdatastr,
+            '\nyum install -y aws-cfn-bootstrap\n'
+        ])
+    else:
+        newuserdata =Join('', [
+            '#!/bin/bash\n',
+            'yum install -y aws-cfn-bootstrap\n'
+        ])
+    return newuserdata

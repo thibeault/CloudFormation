@@ -8,7 +8,7 @@ import sys
 import os
 import boto3
 import json
-from functions import readConfigFile
+from functions import readConfigFile, buildUserData
 from functions import getVPC, getSecurityGroups, getSubnets
 
 # Loading the config file based on the argument passed
@@ -58,25 +58,11 @@ for instance in instances:
         SecurityGroupIds=SecurityGroups,
         Tenancy= instance['Tenancy'],
         InstanceType= instance['InstanceType'],
-        UserData=Base64(Join('', [
-            '#!/bin/bash\n',
-            'apt-get update\n',
-            'apt-get install python-pip -y \n',
-            'yum install -y aws-cfn-bootstrap\n',
-            '/opt/aws/bin/cfn-init -s \'',
-            Ref('AWS::StackName'),
-            '\' -r Ec2Instance -c ascending',
-            ' --region \'',
-            Ref('AWS::Region'),
-            '\'\n',
-        ])),
-        Tags=Tags(**{
-          'Name': '%s' % instance['ServerName'],
-          'Env': '%s' % data['ServerTags']['Env'],
-          'Owner': '%s' % data['ServerTags']['Owner'],
-          'Cost Center': '%s' % data['ServerTags']['CostCenter']
-        })
+        IamInstanceProfile=instance['IamRoleName'],
+        UserData=Base64(buildUserData(instance)),
+        Tags=Tags(**instance['Tags'])
 ))
+#         "UserData": "#!/bin/bash\napt-get update\napt-get install python-pip -y \nyum install -y aws-cfn-bootstrap\n/opt/aws/bin/cfn-init -s \'{\'Ref\': \'AWS::StackName\'}\' -r Ec2Instance -c ascending --region \'{\'Ref\': \'AWS::Region\'}\'\n"
 
 
 print(t.to_json())
