@@ -1,35 +1,46 @@
 {
     "ServerInfo": {
-        "Name": "BastionServer",
+        "Name": "TedServer",
         "KeyName": "nordy-us-east-1",
         "EC2InstanceType": "t2.micro",
-        "AssociatePublicIpAddress": "true",
+        "AssociatePublicIpAddress": "false",
         "DetailMonitoring": "false"
     },
     "BotoFilterInfo": {
         "VpcName": "nordy-lex-vpc",
         "SecurityGroupName": "",
-        "SubnetName": "*Public*"
+        "SubnetName": "*Private*"
     },
     "BotoInit": {
         "ProfileName": "pk",
         "RegionName": "us-east-1"
     },
     "ServerTags": {
-        "Name": "Nordy-bastion",
+        "Name": "Ted-Server",
         "Env": "Dev",
         "Owner": "ethibeault@prokarma.com",
         "CostCenter": "Lex Demo"
     },
     "Instances": [{
-        "ServerName": "BastionServer",
+        "ServerName": "TedServer",
         "KeyPairName": "nordy-us-east-1",
         "InstanceType": "t2.micro",
         "Tenancy": "default",
-        "VolumeSize": "8",
-        "IamRoleName": "",
-        "UserData": ["#!/bin/bash","yum update -y"],
-        "Tags": {"Name": "BastionServer", "Env": "Dev", "Owner": "ethibeault@prokarma.com","Cost Center": "Lex Demo"}
+        "VolumeSize": "25",
+        "IamRoleName": "svc_jenkins",
+        "UserData": ["#!/bin/bash",
+            "yum update -y",
+            "yum install java-1.8.0-openjdk.x86_64 -y",
+            "yum remove java-1.7.0-openjdk -y",
+            "yum install git -y",
+            "cd /etc/yum.repos.d",
+            "wget -O /etc/yum.repos.d/jenkins.repo http://pkg.jenkins-ci.org/redhat/jenkins.repo",
+            "rpm --import https://pkg.jenkins.io/redhat/jenkins.io.key",
+            "yum install jenkins -y",
+            "service jenkins start",
+            "chkconfig --add jenkins",
+            "pip install -U boto3"],
+        "Tags": {"Name": "TedServer", "Env": "Dev", "Owner": "ethibeault@prokarma.com","Cost Center": "Lex Demo"}
     }],
     "RegionMap":{
         "us-east-1": {"AMI": "ami-4fffc834"},
