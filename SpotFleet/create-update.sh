@@ -34,7 +34,7 @@ fi
 
 # Initiate deployment using aws cli
 echo "Trying to create/update the stack"
-echo "       aws --profile "${2}" --region "${3}" cloudformation "$cloudformation_action" --stack-name "${4}" --template-body \$CFTEMPLATE --capabilities CAPABILITY_NAMED_IAM"
+echo "       aws --profile "${2}" --region "${3}" cloudformation "$cloudformation_action" --stack-name "${4}" --template-body \$CFTEMPLATE"
 DEPLOY=`CFTEMPLATE=$(cat  "${1}");aws --profile "${2}" --region "${3}" cloudformation "$cloudformation_action" --stack-name "${4}" --template-body "$CFTEMPLATE" --capabilities CAPABILITY_NAMED_IAM`
 # check response for deployment-id
 if [[ $DEPLOY =~ $deployid_re ]]

@@ -11,7 +11,7 @@ from troposphere.ec2 import SpotFleet
 from troposphere.ec2 import Monitoring, SecurityGroups
 from troposphere.autoscaling import AutoScalingGroup, Metadata, ScalingPolicy
 from functions import readConfigFile
-from functions import getVPC, getSecurityGroups, getSubnets
+from functions import getVPC, getSecurityGroups, getSubnets, getSpotFleetRoleArn, getInstanceProfileArn
 import troposphere.ec2 as ec2
 
 
@@ -83,7 +83,7 @@ myFleetLaunchSpecifications = ec2.LaunchSpecifications(
     ImageId=FindInMap("RegionMap", Ref("AWS::Region"), "AMI"),
     KeyName=data['ClusterInfo']['KeyName'],
     SecurityGroups=SecurityGroupArray,
-    IamInstanceProfile=ec2.IamInstanceProfile(Arn=data['ClusterInfo']['IamInstanceProfile']),
+    IamInstanceProfile=ec2.IamInstanceProfile(Arn=getInstanceProfileArn(data)),
     Monitoring=fleetMonitoring,
     #WeightedCapacity=data['ClusterInfo']['DesiredCapacity'],
     SubnetId=SubnetIds
@@ -101,7 +101,7 @@ myFleetLaunchSpecifications2 = ec2.LaunchSpecifications(
     ImageId=FindInMap("RegionMap", Ref("AWS::Region"), "AMI"),
     KeyName=data['ClusterInfo']['KeyName'],
     SecurityGroups=SecurityGroupArray,
-    IamInstanceProfile=ec2.IamInstanceProfile(Arn=data['ClusterInfo']['IamInstanceProfile']),
+    IamInstanceProfile=ec2.IamInstanceProfile(Arn=getInstanceProfileArn(data)),
     Monitoring=fleetMonitoring,
     #WeightedCapacity=data['ClusterInfo']['DesiredCapacity'],
     SubnetId=SubnetIds
@@ -114,7 +114,7 @@ mySpotFleetRequestConfigData = ec2.SpotFleetRequestConfigData(
     LaunchSpecifications=[myFleetLaunchSpecifications,myFleetLaunchSpecifications2],
     SpotPrice="0.108",
     TargetCapacity=data['ClusterInfo']['DesiredCapacity'],
-    IamFleetRole=data['ClusterInfo']['IamFleetRole'],
+    IamFleetRole=getSpotFleetRoleArn(data),
     TerminateInstancesWithExpiration=True,
     AllocationStrategy='diversified',
 

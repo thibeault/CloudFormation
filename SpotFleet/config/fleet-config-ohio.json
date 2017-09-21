@@ -1,6 +1,6 @@
 {
    "ClusterInfo":{
-      "Name": "ECS-Dev",
+      "Name": "ECS-Ted",
       "KeyName": "ted-ohio",
       "EC2InstanceType": "m4.large",
       "EC2InstanceType2": "m4.xlarge",
@@ -8,35 +8,37 @@
       "DetailMonitoring": "false",
       "DesiredCapacity":"1",
       "MinSize": "1",
-      "MaxSize": "1",
-      "IamInstanceProfile": "arn:aws:iam::470398023813:instance-profile/ecs-cluster-EC2InstanceProfile-1NY3QZGYWFU9J",
-      "IamFleetRole": "arn:aws:iam::470398023813:role/aws-ec2-spot-fleet-role"
+      "MaxSize": "2",
+      "IamInstanceProfileArn": "",
+      "IamFleetRoleArn": ""
    },
    "BotoFilterInfo": {
-      "VpcName": "Nike-ecs-vpc",
+      "VpcName": "thibeault-ecs-vpc",
       "SecurityGroupName": "",
-      "SubnetName": "*Private*"
+      "SubnetName": "*Private*",
+      "EcsClusterRoleName": "EDEEcsClusterRole",
+      "EcsSpotFleetRoleName": "EDEEcsSpotFleetRole"
    },
    "BotoInit": {
-      "ProfileName": "nike",
+      "ProfileName": "pk2",
       "RegionName": "us-east-2"
    },
    "Tags":{
       "Name": "fleet-ecs",
       "Env": "Dev",
-      "Owner": "ethibeault@prokarma.com"
+      "Owner": "thibeault@gmail.com"
    },
    "RegionMap":{
-      "us-east-1": {"AMI": "ami-275ffe31"},
-      "us-east-2": {"AMI": "ami-62745007"},
-      "us-west-1": {"AMI": "ami-689bc208"},
-      "us-west-2": {"AMI": "ami-62d35c02"},
-      "eu-west-1": {"AMI": "ami-95f8d2f3"},
-      "eu-west-2": {"AMI": "ami-bf9481db"},
-      "eu-central-1": {"AMI": "ami-085e8a67"},
-      "ap-northeast-1": {"AMI": "ami-f63f6f91"},
-      "ap-southeast-1": {"AMI": "ami-b4ae1dd7"},
-      "ap-southeast-2": {"AMI": "ami-fbe9eb98"},
-      "ca-central-1": {"AMI": "ami-ee58e58a"}
+      "us-east-1": {"AMI": "ami-0e297018"},
+      "us-east-2": {"AMI": "ami-43d0f626"},
+      "us-west-1": {"AMI": "ami-fcd7f59c"},
+      "us-west-2": {"AMI": "ami-596d6520"},
+      "eu-west-1": {"AMI": "ami-5ae4f83c"},
+      "eu-west-2": {"AMI": "ami-ada6b1c9"},
+      "eu-central-1": {"AMI": "ami-25a4004a"},
+      "ap-northeast-1": {"AMI": "ami-3a000e5d"},
+      "ap-southeast-1": {"AMI": "ami-2428ab47"},
+      "ap-southeast-2": {"AMI": "ami-ac5849cf"},
+      "ca-central-1": {"AMI": "ami-8cfb44e8"}
    }
 }
