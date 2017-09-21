@@ -144,3 +144,5 @@ and use the console or CLI to create your stack
 [Troposphere](https://github.com/cloudtools/troposphere)
 
 [CloudFormation](https://aws.amazon.com/documentation/cloudformation/)
+
+http://docs.aws.amazon.com/AmazonECS/latest/developerguide/ecs-optimized_AMI_launch_latest.html

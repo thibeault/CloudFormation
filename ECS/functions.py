@@ -1,7 +1,6 @@
 import json
 import argparse
 import boto3
-from sys import getsizeof
 
 ### Read config file
 def readConfigFile(filename):
@@ -24,6 +23,49 @@ def ini_ec2_Boto(data):
     else:
         boto_ec2 = boto3.resource('ec2')
     return boto_ec2
+
+## initialize the ec2 boto3 base on what you have in your config file,
+def ini_iam_Boto(data):
+    if data['BotoInit']['ProfileName']:
+        boto3.setup_default_session(profile_name=data['BotoInit']['ProfileName'])
+    if data['BotoInit']['RegionName']:
+        boto_iam = boto3.client('iam', region_name=data['BotoInit']['RegionName'])
+    else:
+        boto_iam = boto3.client('iam')
+
+    return boto_iam
+
+## Look for the instance_profile for role matching your RoleName from the config file
+def getInstanceProfileArn(data):
+    if data["ClusterInfo"]["IamInstanceProfileArn"]:
+        return data["ClusterInfo"]["IamInstanceProfileArn"]
+
+    boto_iam = ini_iam_Boto(data)
+
+    ### Creating the filter to find the VPC if name provided in config file
+    roleName = data['BotoFilterInfo']['EcsClusterRoleName']
+    #print(roleName + "$$$$$$$$$$$$$$$$")
+
+    try:
+        if roleName:
+            try:
+                roles = boto_iam.list_instance_profiles_for_role(RoleName=roleName)
+            except:
+                raise
+
+        #print(roles)
+
+        if len(list(roles["InstanceProfiles"])) == 1:
+            return roles["InstanceProfiles"][0]["Arn"]
+        else:
+            print("ERROR: Found ["+str(len(list(roles["InstanceProfiles"])))+"] InstanceProfile for Role: "+roleName)
+            exit(1)
+
+    except IndexError as e:
+        print("ERROR: Boto can't find InstanceProfiles for the role "+data['BotoFilterInfo']['RoleName']+". Is it there? [%s]" % e)
+        exit(1)
+
+
 
 ## Look for the VPC matching your VpcName from the config file
 def getVPC(data):

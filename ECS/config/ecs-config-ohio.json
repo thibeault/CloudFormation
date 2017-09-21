@@ -1,27 +1,27 @@
 {
    "ClusterInfo":{
-      "Name": "ECS-Dev",
-      "KeyName": "thibeaultKeyPair",
+      "Name": "ECS-Dev-Ted",
+      "KeyName": "ted-ohio",
       "EC2InstanceType": "t2.micro",
       "AssociatePublicIpAddress": "false",
       "DetailMonitoring": "false",
-      "DesiredCapacity":"1",
-      "MinSize": "1",
+      "DesiredCapacity":"0",
+      "MinSize": "0",
       "MaxSize": "2",
       "IamInstanceProfileArn": ""
    },
    "BotoFilterInfo": {
-      "VpcName": "",
+      "VpcName": "thibeault-ecs-vpc",
       "SecurityGroupName": "",
-      "SubnetName": "",
-      "RoleName": "EDEEcsClusterRole"
+      "SubnetName": "*Private*",
+      "EcsClusterRoleName": "EDEEcsClusterRole"
    },
    "BotoInit": {
-      "ProfileName": "t-bo",
-      "RegionName": "us-east-1"
+      "ProfileName": "pk2",
+      "RegionName": "us-east-2"
    },
    "Tags":{
-      "Name": "thibeault-ecs",
+      "Name": "Ted-Dev-ecs",
       "Env": "Dev",
       "Owner": "thibeault@gmail.com"
    },

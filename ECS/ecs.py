@@ -10,7 +10,7 @@ from troposphere.cloudwatch import Alarm, MetricDimension
 from troposphere.autoscaling import LaunchConfiguration
 from troposphere.autoscaling import AutoScalingGroup, Metadata, ScalingPolicy
 from functions import readConfigFile
-from functions import getVPC, getSecurityGroups, getSubnets
+from functions import getVPC, getSecurityGroups, getSubnets, getInstanceProfileArn
 import troposphere.ec2 as ec2
 
 # Loading the config file based on the argument passed
@@ -139,8 +139,7 @@ ContainerInstances = t.add_resource(LaunchConfiguration(
     ImageId=FindInMap("RegionMap", Ref("AWS::Region"), "AMI"),
     KeyName=data['ClusterInfo']['KeyName'],
     SecurityGroups=SecurityGroups,
-    #IamInstanceProfile=Ref('EC2InstanceProfile'),
-    IamInstanceProfile=data['ClusterInfo']['IamInstanceProfile'],
+    IamInstanceProfile=getInstanceProfileArn(data),
     InstanceType=data['ClusterInfo']['EC2InstanceType'],
     AssociatePublicIpAddress=data['ClusterInfo']['AssociatePublicIpAddress'],
     InstanceMonitoring=data['ClusterInfo']['DetailMonitoring'],
@@ -190,4 +189,5 @@ EC2CPUScalingPolicy = t.add_resource(ScalingPolicy(
 ))
 
 print(t.to_json())
+
 #print("OK!!!")
