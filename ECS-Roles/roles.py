@@ -88,6 +88,7 @@ PolicyCloudwatch = t.add_resource(PolicyType(
 # Linking our EC2 with the Role
 EC2InstanceProfile = t.add_resource(InstanceProfile(
     'EC2InstanceProfile',
+    #InstanceProfileName='EC2InstanceProfile',
     Path='/',
     Roles=[Ref(EcsClusterRole)],
 ))

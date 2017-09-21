@@ -6,10 +6,10 @@
 ## 2 - profile name
 ## 3 - aws region, ex: us-east-1
 ## 4 -  to be stack name ex: ecs-cluster
-## ./create-update.sh myECSCloudFormation.json t-bo us-east-1  ecs-cluster
+## ./create-update.sh myECSCloudFormation.json default us-east-1  ecs-cluster
 
 ## Should add at the end something to show all the events
-## aws --profile nike --region us-east-1 cloudformation describe-stack-events --stack-name arn:aws:cloudformation:us-east-1::stack/ecs-vpc/7d8bc632-0f1d-11e7-8794-300c219a3c36
+## aws --profile default --region us-east-1 cloudformation describe-stack-events --stack-name arn:aws:cloudformation:us-east-1::stack/ecs-vpc/7d8bc632-0f1d-11e7-8794-300c219a3c36
 
 RETRY_LIMIT=60
 WAIT_TIME=20s
